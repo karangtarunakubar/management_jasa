@@ -596,11 +596,12 @@
           <div class="mini-panel">
             <h3>Master Kategori Produk</h3>
             <ul class="master-list">
-              <li>Brochure — Rp 150.000</li>
-              <li>Poster — Rp 220.000</li>
-              <li>Banner — Rp 350.000</li>
-              <li>Packaging — Rp 275.000</li>
-              <li>Social Media — Rp 180.000</li>
+              <li>Spanduk — Rp 150.000</li>
+              <li>Plang — Rp 220.000</li>
+              <li>Leaflet, Poster — Rp 350.000</li>
+              <li>Nota Costum — Rp 275.000</li>
+              <li>Stemple — Rp 180.000</li>
+              <li>X banner — Rp 180.000</li>
             </ul>
           </div>
 
@@ -630,7 +631,7 @@
         <tr><td colspan="2"><strong>Alamat / Email:</strong> <span id="pEmail"></span></td></tr>
       </table>
 
-      <table style="width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 13px;" border="1">
+      <li>Stemple — Rp 180.000</li>
         <tr style="background: #1f4e79; color: white;">
           <th style="padding: 6px;">Kategori Produk</th>
           <th style="padding: 6px;">Orientasi & Dimensi</th>
@@ -647,12 +648,54 @@
         </tr>
       </table>
 
+<!-- AREA INFORMASI PEMBAYARAN PADA INVOICE CETAK -->
+<div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-start;">
+  <div style="font-size: 12px; border: 1px solid #ccc; padding: 10px; width: 52%; border-radius: 4px;">
+    <strong>INFORMASI PEMBAYARAN:</strong><br>
+    • Metode Bayar: <span id="pMetode" style="font-weight: bold;"></span><br>
+    • Status Pembayaran: <span id="pStatus" style="font-weight: bold; text-transform: uppercase;"></span><br>
+    
+    <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #ccc;">
+      <strong>DAFTAR REKENING BANK:</strong><br>
+      • <span id="pBank"></span><br>
+      <small style="color: #555;">(Pilihan Bank Placeholder: BCA / MANDIRI / BNI / BRI)</small>
+    </div>
+
+    <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #ccc;">
+      <strong>QRIS MERCHANT:</strong><br>
+      • ID / Link QRIS: <span id="pQris"></span>
+    </div>
+  </div>
+
+<!-- DUA FIELD: NAMA BANK PLACEHOLDER & NO. REKENING -->
+<div class="field">
+  <label for="namaBankSelect">Nama BANK (Transfer)</label>
+  <select id="namaBankSelect" name="namaBankSelect">
+    <option value="BCA">BCA — 1234567890 (a.n Haikal)</option>
+    <option value="Mandiri">Mandiri — 137000123456 (a.n Haikal)</option>
+    <option value="BNI">BNI — 0987654321 (a.n Haikal)</option>
+    <option value="BRI">BRI — 602101001234567 (a.n Haikal)</option>
+  </select>
+</div>
+
+<div class="field">
+  <label for="bankInfo">Detail Rekening Custom</label>
+  <input id="bankInfo" name="bankInfo" type="text" placeholder="BCA: 1234567890 a.n Haikal" value="BCA: 1234567890 (a.n Haikal)" required />
+</div>
+  
+  <div style="text-align: right; width: 44%;">
+    <p style="font-size: 13px; margin: 0; color: #555;"><strong>TOTAL TAGIHAN:</strong></p>
+    <h2 id="pTotal" style="color: #1f4e79; margin: 5px 0; font-size: 22px;"></h2>
+  </div>
+</div>
+      
       <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-start;">
         <div style="font-size: 12px; border: 1px solid #ccc; padding: 10px; width: 50%;">
           <strong>INFORMASI PEMBAYARAN:</strong><br>
           • Metode: <span id="pMetode"></span><br>
           • Status: <span id="pStatus" style="font-weight: bold;"></span><br>
-          • Rekening BANK: <span id="pBank"></span><br>
+          • Rekening BANK: <span id="pBank">
+      </span><br>
           • QRIS Code: <span id="pQris"></span>
         </div>
         <div style="text-align: right; width: 45%;">
