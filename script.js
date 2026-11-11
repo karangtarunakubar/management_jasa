@@ -1,219 +1,359 @@
-const DAY_NAMES = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+// ==========================================
+// 1. DATABASE IMPLEMENTATION (IndexedDB)
+// ==========================================
+const DB_NAME = 'ArtDesignDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'orders';
 
-const initialTransactions = [
-  {
-    invoice: 'INV-2026-001',
-    customerId: 'CUST-001',
-    customerName: 'Budi Santoso',
-    hari: 'Senin',
-    tanggal: '03/11/2026',
-    kategori: 'Poster',
-    orientasi: 'Portrait',
-    dimensi: 'A4',
-    total: 250000,
-    metode: 'QRIS',
-    status: 'Paid'
-  },
-  {
-    invoice: 'INV-2026-002',
-    customerId: 'CUST-002',
-    customerName: 'Siska Putri',
-    hari: 'Rabu',
-    tanggal: '05/11/2026',
-    kategori: 'Banner',
-    orientasi: 'Landscape',
-    dimensi: '120x80 cm',
-    total: 420000,
-    metode: 'Transfer Bank',
-    status: 'DP'
-  },
-  {
-    invoice: 'INV-2026-003',
-    customerId: 'CUST-003',
-    customerName: 'Raka Wijaya',
-    hari: 'Jumat',
-    tanggal: '07/11/2026',
-    kategori: 'Packaging',
-    orientasi: 'Square',
-    dimensi: '15x15 cm',
-    total: 320000,
-    metode: 'Cash',
-    status: 'Unpaid'
-  }
-];
+let db = null;
 
-const state = {
-  transactions: [...initialTransactions]
+// Inisialisasi Database IndexedDB
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = (event) => {
+      const dbInstance = event.target.result;
+      if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
+        const objectStore = dbInstance.createObjectStore(STORE_NAME, {
+          keyPath: 'invoiceNo'
+        });
+        objectStore.createIndex('hari', 'hariPemesanan', { unique: false });
+        objectStore.createIndex('kategori', 'kategoriProduk', { unique: false });
+        objectStore.createIndex('metode', 'metodeBayar', { unique: false });
+      }
+    };
+
+    request.onsuccess = (event) => {
+      db = event.target.result;
+      resolve(db);
+    };
+
+    request.onerror = (event) => {
+      console.error('Database error:', event.target.error);
+      reject(event.target.error);
+    };
+  });
+}
+
+// Tambah / Simpan Order ke Database
+function saveOrderToDB(orderData) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.put(orderData);
+
+    request.onsuccess = () => resolve(true);
+    request.onerror = (e) => reject(e.target.error);
+  });
+}
+
+// Ambil Semua Data Order dari Database
+function getAllOrdersFromDB() {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.getAll();
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = (e) => reject(e.target.error);
+  });
+}
+
+// Hapus Order dari Database
+function deleteOrderFromDB(invoiceNo) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.delete(invoiceNo);
+
+    request.onsuccess = () => resolve(true);
+    request.onerror = (e) => reject(e.target.error);
+  });
+}
+
+// ==========================================
+// 2. TABS NAVIGATION & UI CONTROL
+// ==========================================
+document.addEventListener('DOMContentLoaded', async () => {
+  await initDB();
+  setupTabs();
+  setupFormCalculations();
+  setupFormSubmit();
+  await refreshUI();
+});
+
+function setupTabs() {
+  const tabs = document.querySelectorAll('.sheet-tabs .tab');
+  const panels = document.querySelectorAll('.sheet-panel');
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((t) => t.classList.remove('active'));
+      panels.forEach((p) => p.classList.remove('active'));
+
+      tab.classList.add('active');
+      const targetId = tab.getAttribute('data-sheet');
+      document.getElementById(targetId).classList.add('active');
+    });
+  });
+}
+
+// ==========================================
+// 3. KALKULATOR HARGA & HARGA DASAR AUTO
+// ==========================================
+const hargaMaster = {
+  Brochure: 150000,
+  Poster: 220000,
+  Banner: 350000,
+  Packaging: 275000,
+  'Social Media': 180000
 };
 
-const tabs = document.querySelectorAll('.tab');
-const panels = document.querySelectorAll('.sheet-panel');
-const orderForm = document.getElementById('orderForm');
-const basePriceInput = document.getElementById('hargaDasar');
-const quantityInput = document.getElementById('jumlahOrder');
-const displayHargaDasar = document.getElementById('displayHargaDasar');
-const displayJumlah = document.getElementById('displayJumlah');
-const displaySubtotal = document.getElementById('displaySubtotal');
-const displayTambahan = document.getElementById('displayTambahan');
-const liveTotal = document.getElementById('liveTotal');
-const transactionTableBody = document.getElementById('transactionTableBody');
+function setupFormCalculations() {
+  const kategoriSelect = document.getElementById('kategoriProduk');
+  const hargaDasarInput = document.getElementById('hargaDasar');
+  const jumlahOrderInput = document.getElementById('jumlahOrder');
 
-function formatCurrency(value) {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0
-  }).format(value || 0);
+  // Auto set harga dasar dari master data saat kategori dipilih
+  kategoriSelect.addEventListener('change', (e) => {
+    const selected = e.target.value;
+    if (hargaMaster[selected]) {
+      hargaDasarInput.value = hargaMaster[selected];
+    }
+    updateLiveCalculator();
+  });
+
+  hargaDasarInput.addEventListener('input', updateLiveCalculator);
+  jumlahOrderInput.addEventListener('input', updateLiveCalculator);
 }
 
-function updatePriceSummary() {
-  const hargaDasar = Number(basePriceInput.value || 0);
-  const qty = Number(quantityInput.value || 0);
-  const subtotal = hargaDasar * qty;
-  const biayaTambahan = Math.max(0, subtotal * 0.05);
-  const total = subtotal + biayaTambahan;
+function updateLiveCalculator() {
+  const hargaDasar = parseFloat(document.getElementById('hargaDasar').value) || 0;
+  const jumlah = parseInt(document.getElementById('jumlahOrder').value) || 1;
+  const subtotal = hargaDasar * jumlah;
+  const total = subtotal;
 
-  displayHargaDasar.textContent = formatCurrency(hargaDasar);
-  displayJumlah.textContent = qty;
-  displaySubtotal.textContent = formatCurrency(subtotal);
-  displayTambahan.textContent = formatCurrency(biayaTambahan);
-  liveTotal.textContent = formatCurrency(total);
+  document.getElementById('displayHargaDasar').innerText = formatRupiah(hargaDasar);
+  document.getElementById('displayJumlah').innerText = jumlah;
+  document.getElementById('displaySubtotal').innerText = formatRupiah(subtotal);
+  document.getElementById('liveTotal').innerText = formatRupiah(total);
 }
 
-function renderTransactions() {
-  transactionTableBody.innerHTML = '';
+function formatRupiah(angka) {
+  return 'Rp ' + new Intl.NumberFormat('id-ID').format(angka);
+}
 
-  state.transactions.forEach((item, index) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
+// ==========================================
+// 4. SUBMIT FORM & SIMPAN DATA
+// ==========================================
+function setupFormSubmit() {
+  const form = document.getElementById('orderForm');
+  const statusNote = document.getElementById('formStatus');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const hargaDasar = parseFloat(document.getElementById('hargaDasar').value) || 0;
+    const jumlahOrder = parseInt(document.getElementById('jumlahOrder').value) || 1;
+    const totalInvoice = hargaDasar * jumlahOrder;
+
+    const newOrder = {
+      invoiceNo: document.getElementById('invoiceNo').value.trim(),
+      customerId: document.getElementById('customerId').value.trim(),
+      hariPemesanan: document.getElementById('hariPemesanan').value,
+      tanggalPemesanan: document.getElementById('tanggalPemesanan').value,
+      namaCustomer: document.getElementById('namaCustomer').value.trim(),
+      waCustomer: document.getElementById('waCustomer').value.trim(),
+      emailCustomer: document.getElementById('emailCustomer').value.trim(),
+      kategoriProduk: document.getElementById('kategoriProduk').value,
+      orientasi: document.getElementById('orientasi').value,
+      dimensi: document.getElementById('dimensi').value.trim(),
+      jumlahOrder: jumlahOrder,
+      hargaDasar: hargaDasar,
+      totalInvoice: totalInvoice,
+      metodeBayar: document.getElementById('metodeBayar').value,
+      statusBayar: document.getElementById('statusBayar').value,
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      await saveOrderToDB(newOrder);
+      statusNote.innerText = '✅ Order ' + newOrder.invoiceNo + ' berhasil disimpan ke Database!';
+      statusNote.style.color = '#10B981';
+
+      form.reset();
+      updateLiveCalculator();
+      await refreshUI();
+
+      setTimeout(() => {
+        statusNote.innerText = 'Siap menyimpan data baru';
+        statusNote.style.color = '';
+      }, 4000);
+    } catch (err) {
+      statusNote.innerText = '❌ Gagal menyimpan data (Invoice sudah ada / Error DB)';
+      statusNote.style.color = '#EF4444';
+    }
+  });
+}
+
+// ==========================================
+// 5. AUTO REFRESH SHEET 2 & SHEET 3 DARI DB
+// ==========================================
+async function refreshUI() {
+  const orders = await getAllOrdersFromDB();
+  renderTable(orders);
+  renderAuditDashboard(orders);
+}
+
+// Render Sheet 2: Tabel Transaksi Pemesanan
+function renderTable(orders) {
+  const tbody = document.getElementById('transactionTableBody');
+  tbody.innerHTML = '';
+
+  if (orders.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; padding: 20px; color: #888;">Belum ada data transaksi tersimpan.</td></tr>`;
+    return;
+  }
+
+  orders.forEach((order, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
       <td>${index + 1}</td>
-      <td>${item.invoice}</td>
-      <td>${item.customerId}</td>
-      <td>${item.customerName}</td>
-      <td>${item.hari}</td>
-      <td>${item.tanggal}</td>
-      <td>${item.kategori}</td>
-      <td>${item.orientasi}</td>
-      <td>${item.dimensi}</td>
-      <td>${formatCurrency(item.total)}</td>
-      <td>${item.metode}</td>
-      <td>${item.status}</td>
+      <td><strong>${order.invoiceNo}</strong></td>
+      <td>${order.customerId}</td>
+      <td>${order.namaCustomer}</td>
+      <td>${order.hariPemesanan}</td>
+      <td>${order.tanggalPemesanan}</td>
+      <td><span class="badge badge-kat">${order.kategoriProduk}</span></td>
+      <td>${order.orientasi}</td>
+      <td>${order.dimensi}</td>
+      <td><strong>${formatRupiah(order.totalInvoice)}</strong></td>
+      <td>${order.metodeBayar}</td>
+      <td><span class="badge status-${order.statusBayar.toLowerCase()}">${order.statusBayar}</span></td>
     `;
-    transactionTableBody.appendChild(row);
+    tbody.appendChild(tr);
   });
-
-  updateAudit();
 }
 
-function updateAudit() {
-  const totalOrders = state.transactions.length;
-  const unpaid = state.transactions.filter((item) => item.status === 'Unpaid').length;
-  const totalRevenue = state.transactions.reduce((sum, item) => sum + Number(item.total || 0), 0);
+// Render Sheet 3: Dashboard Audit & Monitoring
+function renderAuditDashboard(orders) {
+  const totalOrders = orders.length;
+  const unpaidCount = orders.filter((o) => o.statusBayar === 'Unpaid').length;
+  const totalRevenue = orders.reduce((sum, o) => sum + (o.totalInvoice || 0), 0);
 
-  const paymentCounts = state.transactions.reduce((acc, item) => {
-    acc[item.metode] = (acc[item.metode] || 0) + 1;
-    return acc;
-  }, {});
+  document.getElementById('auditTotalOrders').innerText = totalOrders;
+  document.getElementById('auditUnpaid').innerText = unpaidCount;
+  document.getElementById('auditRevenue').innerText = formatRupiah(totalRevenue);
 
-  const paymentMethodText = Object.entries(paymentCounts)
-    .sort((a, b) => b[1] - a[1])[0]
-    ?.join(': ') || '-';
+  // Rekap Metode Bayar
+  const payCount = { QRIS: 0, Cash: 0, 'Transfer Bank': 0 };
+  orders.forEach((o) => {
+    if (payCount[o.metodeBayar] !== undefined) payCount[o.metodeBayar]++;
+  });
+  const topPayment = Object.keys(payCount).reduce((a, b) => (payCount[a] > payCount[b] ? a : b), 'QRIS');
+  document.getElementById('auditPaymentMethod').innerText = totalOrders > 0 ? topPayment : '-';
 
-  const dayCounts = DAY_NAMES.reduce((acc, day) => {
-    acc[day] = state.transactions.filter((item) => item.hari === day).length;
-    return acc;
-  }, {});
-
-  const categoryTotals = state.transactions.reduce((acc, item) => {
-    acc[item.kategori] = (acc[item.kategori] || 0) + Number(item.total || 0);
-    return acc;
-  }, {});
-
-  document.getElementById('auditTotalOrders').textContent = totalOrders;
-  document.getElementById('auditUnpaid').textContent = unpaid;
-  document.getElementById('auditRevenue').textContent = formatCurrency(totalRevenue);
-  document.getElementById('auditPaymentMethod').textContent = paymentMethodText;
-
+  // 1. Audit Tren per Hari
   const dayTrendList = document.getElementById('dayTrendList');
-  dayTrendList.innerHTML = DAY_NAMES.map((day) => {
-    const value = dayCounts[day] || 0;
-    return `
-      <li>
-        <span>${day}</span>
-        <strong>${value}</strong>
-      </li>
-    `;
-  }).join('');
+  dayTrendList.innerHTML = '';
+  const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+  days.forEach((day) => {
+    const count = orders.filter((o) => o.hariPemesanan === day).length;
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${day}</span> <strong>${count} Order</strong>`;
+    dayTrendList.appendChild(li);
+  });
 
+  // 2. Rekap Metode Pembayaran
   const paymentBreakdownList = document.getElementById('paymentBreakdownList');
-  const sortedPayment = Object.entries(paymentCounts).sort((a, b) => b[1] - a[1]);
-  paymentBreakdownList.innerHTML = sortedPayment.length
-    ? sortedPayment.map(([method, count]) => `
-        <li>
-          <span>${method}</span>
-          <strong>${count}</strong>
-        </li>
-      `).join('')
-    : '<li><span>-</span><strong>0</strong></li>';
+  paymentBreakdownList.innerHTML = '';
+  Object.keys(payCount).forEach((method) => {
+    const count = payCount[method];
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${method}</span> <strong>${count} Transaksi</strong>`;
+    paymentBreakdownList.appendChild(li);
+  });
 
+  // 3. Breakdown Omset per Kategori
   const categoryBreakdownList = document.getElementById('categoryBreakdownList');
-  const totalCategory = Object.values(categoryTotals).reduce((sum, val) => sum + val, 0) || 1;
-  categoryBreakdownList.innerHTML = Object.entries(categoryTotals)
-    .sort((a, b) => b[1] - a[1])
-    .map(([category, value]) => {
-      const contribution = ((value / totalCategory) * 100).toFixed(1);
-      return `
-        <li>
-          <span>${category}</span>
-          <strong>${formatCurrency(value)} • ${contribution}%</strong>
-        </li>
-      `;
-    }).join('');
-}
-
-function switchSheet(targetId) {
-  tabs.forEach((tab) => {
-    const active = tab.dataset.sheet === targetId;
-    tab.classList.toggle('active', active);
+  categoryBreakdownList.innerHTML = '';
+  const catOmset = {};
+  orders.forEach((o) => {
+    catOmset[o.kategoriProduk] = (catOmset[o.kategoriProduk] || 0) + o.totalInvoice;
   });
 
-  panels.forEach((panel) => {
-    panel.classList.toggle('active', panel.id === targetId);
+  Object.keys(hargaMaster).forEach((cat) => {
+    const omset = catOmset[cat] || 0;
+    const pct = totalRevenue > 0 ? ((omset / totalRevenue) * 100).toFixed(1) : 0;
+    const li = document.createElement('li');
+    li.innerHTML = `<span>${cat}</span> <strong>${formatRupiah(omset)} (${pct}%)</strong>`;
+    categoryBreakdownList.appendChild(li);
   });
 }
 
-tabs.forEach((tab) => {
-  tab.addEventListener('click', () => switchSheet(tab.dataset.sheet));
+// ==========================================
+// 6. AUTO SEND INVOICE TO WHATSAPP CUSTOMER
+// ==========================================
+function setupWhatsAppSender() {
+  const btnSendWa = document.getElementById('btnSendWa');
+  
+  btnSendWa.addEventListener('click', () => {
+    // Ambil data dari form input saat ini
+    const invoiceNo = document.getElementById('invoiceNo').value.trim() || 'INV-XXXX';
+    const namaCustomer = document.getElementById('namaCustomer').value.trim() || 'Pelanggan';
+    const waCustomer = document.getElementById('waCustomer').value.trim();
+    const kategori = document.getElementById('kategoriProduk').value || '-';
+    const orientasi = document.getElementById('orientasi').value || '-';
+    const dimensi = document.getElementById('dimensi').value || '-';
+    const jumlah = document.getElementById('jumlahOrder').value || 1;
+    const metodeBayar = document.getElementById('metodeBayar').value || '-';
+    const statusBayar = document.getElementById('statusBayar').value || '-';
+    
+    const hargaDasar = parseFloat(document.getElementById('hargaDasar').value) || 0;
+    const totalInvoice = hargaDasar * jumlah;
+
+    if (!waCustomer) {
+      alert('⚠️ Mohon isi Nomor WhatsApp (No. WA) customer terlebih dahulu!');
+      document.getElementById('waCustomer').focus();
+      return;
+    }
+
+    // Format Pesan WhatsApp yang rapi & profesional
+    const message = 
+`*INVOICE PEMESANAN - ART DESIGN*
+-----------------------------------
+Halo *${namaCustomer}*, 
+Terima kasih telah mempercayakan kebutuhan desain & cetak Anda kepada kami. Berikut adalah rincian tagihan Anda:
+
+🧾 *No. Invoice:* ${invoiceNo}
+📦 *Kategori:* ${kategori} (${orientasi} - ${dimensi})
+🔢 *Jumlah:* ${jumlah} Pcs/Unit
+💰 *Total Tagihan:* *${formatRupiah(totalInvoice)}*
+
+💳 *Metode Pembayaran:* ${metodeBayar}
+📌 *Status:* *${statusBayar}*
+
+Silakan lakukan pembayaran atau konfirmasi pesanan melalui balasan chat ini. Terima kasih! 🙏`;
+
+    // Bersihkan nomor telepon dari spasi/simbol (ubah 08xxx menjadi 628xxx)
+    let cleanPhone = waCustomer.replace(/\D/g, '');
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '62' + cleanPhone.slice(1);
+    }
+
+    // Buka WhatsApp Web / App dengan URL scheme
+    const waURL = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    window.open(waURL, '_blank');
+  });
+}
+
+// Panggil fungsi ini di dalam DOMContentLoaded event utama Anda:
+document.addEventListener('DOMContentLoaded', async () => {
+  await initDB();
+  setupTabs();
+  setupFormCalculations();
+  setupFormSubmit();
+  setupWhatsAppSender(); // <--- Tambahkan inisialisasi ini
+  await refreshUI();
 });
-
-[basePriceInput, quantityInput].forEach((input) => input.addEventListener('input', updatePriceSummary));
-
-orderForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-
-  const formData = new FormData(orderForm);
-  const transaksi = {
-    invoice: formData.get('invoiceNo'),
-    customerId: formData.get('customerId'),
-    customerName: formData.get('namaCustomer'),
-    hari: formData.get('hariPemesanan'),
-    tanggal: formData.get('tanggalPemesanan'),
-    kategori: formData.get('kategoriProduk'),
-    orientasi: formData.get('orientasi'),
-    dimensi: formData.get('dimensi'),
-    total: Number(basePriceInput.value || 0) * Number(quantityInput.value || 0),
-    metode: formData.get('metodeBayar'),
-    status: formData.get('statusBayar')
-  };
-
-  state.transactions.unshift(transaksi);
-  renderTransactions();
-  orderForm.reset();
-  document.getElementById('jumlahOrder').value = 1;
-  document.getElementById('hargaDasar').value = 150000;
-  document.getElementById('formStatus').textContent = `Data ${transaksi.invoice} berhasil disimpan dan terhubung.`;
-  updatePriceSummary();
-});
-
-updatePriceSummary();
-renderTransactions();
