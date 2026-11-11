@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Management Jasa</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Sistem Manajemen</p>
+          <h1>Management Jasa</h1>
+        </div>
+        <div class="topbar-badge">Order Management</div>
+      </header>
+
+      <nav class="sheet-tabs" aria-label="Sheet navigation">
+        <button class="tab active" data-sheet="sheet1">Sheet 1: Form Input Order</button>
+        <button class="tab" data-sheet="sheet2">Sheet 2: Transaksi Pemesanan</button>
+        <button class="tab" data-sheet="sheet3">Sheet 3: Sheet Audit</button>
+        <button class="tab" data-sheet="sheet4">Sheet 4: Master Data & Harga</button>
+      </nav>
+
+      <main class="sheet-panel active" id="sheet1">
+        <section class="panel-header">
+          <div>
+            <p class="section-kicker">Form Input</p>
+            <h2>Order Input</h2>
+          </div>
+        </section>
+
+        <form id="orderForm" class="grid-form">
+          <div class="field">
+            <label for="invoiceNo">No. Invoice</label>
+            <input id="invoiceNo" name="invoiceNo" type="text" placeholder="INV-2026-001" required />
+          </div>
+
+          <div class="field">
+            <label for="customerId">ID Customer</label>
+            <input id="customerId" name="customerId" type="text" placeholder="CUST-001" required />
+          </div>
+
+          <div class="field">
+            <label for="hariPemesanan">Hari Pemesanan</label>
+            <select id="hariPemesanan" name="hariPemesanan" required>
+              <option value="">Pilih hari</option>
+              <option>Senin</option>
+              <option>Selasa</option>
+              <option>Rabu</option>
+              <option>Kamis</option>
+              <option>Jumat</option>
+              <option>Sabtu</option>
+              <option>Minggu</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="tanggalPemesanan">Tanggal Pemesanan</label>
+            <input id="tanggalPemesanan" name="tanggalPemesanan" type="text" placeholder="dd/mm/yyyy" pattern="\d{2}/\d{2}/\d{4}" required />
+          </div>
+
+          <div class="field field-wide">
+            <label for="namaCustomer">Nama Customer</label>
+            <input id="namaCustomer" name="namaCustomer" type="text" placeholder="Nama lengkap" required />
+          </div>
+
+          <div class="field">
+            <label for="waCustomer">No. WA</label>
+            <input id="waCustomer" name="waCustomer" type="tel" placeholder="08xxx" required />
+          </div>
+
+          <div class="field field-wide">
+            <label for="emailCustomer">Email / Alamat</label>
+            <input id="emailCustomer" name="emailCustomer" type="text" placeholder="Email atau alamat lengkap" required />
+          </div>
+
+          <div class="field">
+            <label for="kategoriProduk">Kategori Produk</label>
+            <select id="kategoriProduk" name="kategoriProduk" required>
+              <option value="">Pilih kategori</option>
+              <option value="Brochure">Brochure</option>
+              <option value="Poster">Poster</option>
+              <option value="Banner">Banner</option>
+              <option value="Packaging">Packaging</option>
+              <option value="Social Media">Social Media</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="orientasi">Orientasi</label>
+            <select id="orientasi" name="orientasi" required>
+              <option value="">Pilih orientasi</option>
+              <option value="Portrait">Portrait</option>
+              <option value="Landscape">Landscape</option>
+              <option value="Square">Square</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="dimensi">Dimensi Ukuran</label>
+            <input id="dimensi" name="dimensi" type="text" placeholder="A4 / 3x4 / 120x80 cm" required />
+          </div>
+
+          <div class="field">
+            <label for="jumlahOrder">Jumlah Order</label>
+            <input id="jumlahOrder" name="jumlahOrder" type="number" min="1" value="1" required />
+          </div>
+
+          <div class="field">
+            <label for="hargaDasar">Harga Dasar</label>
+            <input id="hargaDasar" name="hargaDasar" type="number" min="0" value="150000" required />
+          </div>
+
+          <div class="field">
+            <label for="metodeBayar">Metode Bayar</label>
+            <select id="metodeBayar" name="metodeBayar" required>
+              <option value="">Pilih metode</option>
+              <option>QRIS</option>
+              <option>Cash</option>
+              <option>Transfer Bank</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="statusBayar">Status Bayar</label>
+            <select id="statusBayar" name="statusBayar" required>
+              <option value="">Pilih status</option>
+              <option>Paid</option>
+              <option>Unpaid</option>
+              <option>DP</option>
+            </select>
+          </div>
+
+          <div class="field field-wide calculator-box">
+            <div class="calc-head">
+              <h3>Kalkulator Estimasi Harga</h3>
+              <span id="liveTotal">Rp 0</span>
+            </div>
+            <div class="calc-grid">
+              <div>
+                <span>Harga Dasar</span>
+                <strong id="displayHargaDasar">Rp 150.000</strong>
+              </div>
+              <div>
+                <span>Jumlah</span>
+                <strong id="displayJumlah">1</strong>
+              </div>
+              <div>
+                <span>Subtotal</span>
+                <strong id="displaySubtotal">Rp 150.000</strong>
+              </div>
+              <div>
+                <span>Biaya Tambahan</span>
+                <strong id="displayTambahan">Rp 0</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="field field-wide actions-row">
+            <button type="submit" class="primary-btn">Simpan & Auto Link Transaksi</button>
+            <div class="status-note" id="formStatus">Siap menyimpan data baru</div>
+          </div>
+        </form>
+      </main>
+
+      <main class="sheet-panel" id="sheet2">
+        <section class="panel-header">
+          <div>
+            <p class="section-kicker">Register</p>
+            <h2>Transaksi Pemesanan</h2>
+          </div>
+        </section>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Invoice</th>
+                <th>ID Customer</th>
+                <th>Nama</th>
+                <th>Hari</th>
+                <th>Tanggal</th>
+                <th>Kategori</th>
+                <th>Orientasi</th>
+                <th>Dimensi</th>
+                <th>Total</th>
+                <th>Metode</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTableBody"></tbody>
+          </table>
+        </div>
+      </main>
+
+      <main class="sheet-panel" id="sheet3">
+        <section class="panel-header">
+          <div>
+            <p class="section-kicker">Monitoring & Audit</p>
+            <h2>Sheet Audit</h2>
+          </div>
+        </section>
+
+        <div class="audit-grid">
+          <div class="metric-card">
+            <span>Total Pesanan</span>
+            <strong id="auditTotalOrders">0</strong>
+          </div>
+          <div class="metric-card warning">
+            <span>Unpaid Error</span>
+            <strong id="auditUnpaid">0</strong>
+          </div>
+          <div class="metric-card success">
+            <span>Omset Toko</span>
+            <strong id="auditRevenue">Rp 0</strong>
+          </div>
+          <div class="metric-card info">
+            <span>Metode Bayar</span>
+            <strong id="auditPaymentMethod">-</strong>
+          </div>
+        </div>
+
+        <div class="audit-layout">
+          <div class="mini-panel">
+            <h3>Audit Tren Pemesanan per Hari</h3>
+            <ul id="dayTrendList" class="trend-list"></ul>
+          </div>
+
+          <div class="mini-panel">
+            <h3>Rekap Metode Pembayaran</h3>
+            <ul id="paymentBreakdownList" class="trend-list"></ul>
+          </div>
+
+          <div class="mini-panel full-span">
+            <h3>Breakdown Omset & % Kontribusi Kategori</h3>
+            <ul id="categoryBreakdownList" class="trend-list"></ul>
+          </div>
+        </div>
+      </main>
+
+      <main class="sheet-panel" id="sheet4">
+        <section class="panel-header">
+          <div>
+            <p class="section-kicker">Reference</p>
+            <h2>Master Data & Harga</h2>
+          </div>
+        </section>
+
+        <div class="master-grid">
+          <div class="mini-panel">
+            <h3>Master Opsi Hari</h3>
+            <ul class="master-list">
+              <li>Senin</li>
+              <li>Selasa</li>
+              <li>Rabu</li>
+              <li>Kamis</li>
+              <li>Jumat</li>
+              <li>Sabtu</li>
+              <li>Minggu</li>
+            </ul>
+          </div>
+
+          <div class="mini-panel">
+            <h3>Master Kategori Produk</h3>
+            <ul class="master-list">
+              <li>Brochure — Rp 150.000</li>
+              <li>Poster — Rp 220.000</li>
+              <li>Banner — Rp 350.000</li>
+              <li>Packaging — Rp 275.000</li>
+              <li>Social Media — Rp 180.000</li>
+            </ul>
+          </div>
+
+          <div class="mini-panel">
+            <h3>Metode Pembayaran</h3>
+            <ul class="master-list">
+              <li>QRIS</li>
+              <li>Cash</li>
+              <li>Transfer Bank</li>
+            </ul>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+																																																																																																																																																																																																																																																																																																																							
