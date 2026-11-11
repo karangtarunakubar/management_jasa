@@ -54,6 +54,9 @@
       }
       .topbar h1 {
         font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
       .topbar-badge {
         background: rgba(255, 255, 255, 0.2);
@@ -295,7 +298,6 @@
         gap: 16px;
       }
 
-      /* PRINT INVOICE MODAL / STYLING */
       #printArea {
         display: none;
       }
@@ -326,9 +328,7 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">Sistem Manajemen</p>
-          <h1>
-            <img src="logo.png"> 
-            Haikal | Art Design</h1>
+          <h1>Haikal | Art Design</h1>
         </div>
         <div class="topbar-badge">Order Management</div>
       </header>
@@ -398,11 +398,12 @@
             <label for="kategoriProduk">Kategori Produk</label>
             <select id="kategoriProduk" name="kategoriProduk" required>
               <option value="">Pilih kategori</option>
-              <option value="Brochure">Brochure</option>
-              <option value="Poster">Poster</option>
-              <option value="Banner">Banner</option>
-              <option value="Packaging">Packaging</option>
-              <option value="Social Media">Social Media</option>
+              <option value="Spanduk">Spanduk</option>
+              <option value="Plang">Plang</option>
+              <option value="Leaflet, Poster">Leaflet, Poster</option>
+              <option value="Nota Costum">Nota Costum</option>
+              <option value="Stemple">Stemple</option>
+              <option value="X banner">X banner</option>
             </select>
           </div>
 
@@ -413,6 +414,7 @@
               <option value="Portrait">Portrait</option>
               <option value="Landscape">Landscape</option>
               <option value="Square">Square</option>
+              <option value="Custom">Custom</option>
             </select>
           </div>
 
@@ -431,14 +433,23 @@
             <input id="hargaDasar" name="hargaDasar" type="number" min="0" value="150000" required />
           </div>
 
-          <!-- REKENING BANK & QRIS PLACEHOLDER -->
           <div class="field">
-            <label for="bankInfo">Rekening BANK (Transfer)</label>
-            <input id="bankInfo" name="bankInfo" type="text" placeholder="BCA 1234567890 a.n Haikal" value="BCA: 1234567890 (a.n Haikal Art Design)" required />
+            <label for="namaBankSelect">Nama BANK (Transfer)</label>
+            <select id="namaBankSelect" name="namaBankSelect">
+              <option value="BCA">BCA — 1234567890 (a.n Haikal)</option>
+              <option value="Mandiri">Mandiri — 137000123456 (a.n Haikal)</option>
+              <option value="BNI">BNI — 0987654321 (a.n Haikal)</option>
+              <option value="BRI">BRI — 602101001234567 (a.n Haikal)</option>
+            </select>
           </div>
 
           <div class="field">
-            <label for="qrisInfo">QRIS Payment</label>
+            <label for="bankInfo">Detail Rekening Transfer</label>
+            <input id="bankInfo" name="bankInfo" type="text" placeholder="BCA: 1234567890 a.n Haikal" value="BCA: 1234567890 (a.n Haikal Art Design)" required />
+          </div>
+
+          <div class="field">
+            <label for="qrisInfo">QRIS Payment Placeholder</label>
             <input id="qrisInfo" name="qrisInfo" type="text" placeholder="Link / ID Merchant QRIS" value="QRIS-ARTDESIGN-098" required />
           </div>
 
@@ -518,7 +529,7 @@
                 <th>ID Customer</th>
                 <th>Nama</th>
                 <th>Hari</th>
-                <th>Tanggal</th>
+                <th>Tanggal (dd/mm/yyyy)</th>
                 <th>Kategori</th>
                 <th>Orientasi</th>
                 <th>Dimensi</th>
@@ -610,16 +621,16 @@
           <div class="mini-panel">
             <h3>Metode & Pembayaran (BANK & QRIS)</h3>
             <ul class="master-list">
-              <li>QRIS (Placeholder Aktif)</li>
+              <li>QRIS (Placeholder Merchant Aktif)</li>
               <li>Cash</li>
-              <li>Transfer BANK (BCA / Mandiri / BNI)</li>
+              <li>Transfer BANK (BCA / Mandiri / BNI / BRI)</li>
             </ul>
           </div>
         </div>
       </main>
     </div>
 
-    <!-- PRINTABLE INVOICE TEMPLATE (HIDDEN UNTUK CETAK) -->
+    <!-- PRINTABLE INVOICE TEMPLATE -->
     <div id="printArea">
       <div style="text-align: center; border-bottom: 2px solid #1f4e79; padding-bottom: 10px; margin-bottom: 15px;">
         <h2 style="color: #1f4e79; margin: 0;">HAIKAL | ART DESIGN</h2>
@@ -633,7 +644,7 @@
         <tr><td colspan="2"><strong>Alamat / Email:</strong> <span id="pEmail"></span></td></tr>
       </table>
 
-      <li>Stemple — Rp 180.000</li>
+      <table style="width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 13px;" border="1">
         <tr style="background: #1f4e79; color: white;">
           <th style="padding: 6px;">Kategori Produk</th>
           <th style="padding: 6px;">Orientasi & Dimensi</th>
@@ -650,59 +661,26 @@
         </tr>
       </table>
 
-<!-- AREA INFORMASI PEMBAYARAN PADA INVOICE CETAK -->
-<div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-start;">
-  <div style="font-size: 12px; border: 1px solid #ccc; padding: 10px; width: 52%; border-radius: 4px;">
-    <strong>INFORMASI PEMBAYARAN:</strong><br>
-    • Metode Bayar: <span id="pMetode" style="font-weight: bold;"></span><br>
-    • Status Pembayaran: <span id="pStatus" style="font-weight: bold; text-transform: uppercase;"></span><br>
-    
-    <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #ccc;">
-      <strong>DAFTAR REKENING BANK:</strong><br>
-      • <span id="pBank"></span><br>
-      <small style="color: #555;">(Pilihan Bank Placeholder: BCA / MANDIRI / BNI / BRI)</small>
-    </div>
-
-    <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #ccc;">
-      <strong>QRIS MERCHANT:</strong><br>
-      • ID / Link QRIS: <span id="pQris"></span>
-    </div>
-  </div>
-
-<!-- DUA FIELD: NAMA BANK PLACEHOLDER & NO. REKENING -->
-<div class="field">
-  <label for="namaBankSelect">Nama BANK (Transfer)</label>
-  <select id="namaBankSelect" name="namaBankSelect">
-    <option value="BCA">BCA — 1234567890 (a.n Haikal)</option>
-    <option value="Mandiri">Mandiri — 137000123456 (a.n Haikal)</option>
-    <option value="BNI">BNI — 0987654321 (a.n Haikal)</option>
-    <option value="BRI">BRI — 602101001234567 (a.n Haikal)</option>
-  </select>
-</div>
-
-<div class="field">
-  <label for="bankInfo">Detail Rekening Custom</label>
-  <input id="bankInfo" name="bankInfo" type="text" placeholder="BCA: 1234567890 a.n Haikal" value="BCA: 1234567890 (a.n Haikal)" required />
-</div>
-  
-  <div style="text-align: right; width: 44%;">
-    <p style="font-size: 13px; margin: 0; color: #555;"><strong>TOTAL TAGIHAN:</strong></p>
-    <h2 id="pTotal" style="color: #1f4e79; margin: 5px 0; font-size: 22px;"></h2>
-  </div>
-</div>
-      
       <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-start;">
-        <div style="font-size: 12px; border: 1px solid #ccc; padding: 10px; width: 50%;">
+        <div style="font-size: 12px; border: 1px solid #ccc; padding: 10px; width: 52%; border-radius: 4px;">
           <strong>INFORMASI PEMBAYARAN:</strong><br>
-          • Metode: <span id="pMetode"></span><br>
-          • Status: <span id="pStatus" style="font-weight: bold;"></span><br>
-          • Rekening BANK: <span id="pBank">
-      </span><br>
-          • QRIS Code: <span id="pQris"></span>
+          • Metode Bayar: <span id="pMetode" style="font-weight: bold;"></span><br>
+          • Status Pembayaran: <span id="pStatus" style="font-weight: bold; text-transform: uppercase;"></span><br>
+          
+          <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #ccc;">
+            <strong>DETAIL REKENING TRANSFER:</strong><br>
+            • <span id="pBank"></span>
+          </div>
+
+          <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #ccc;">
+            <strong>QRIS MERCHANT:</strong><br>
+            • ID / Link QRIS: <span id="pQris"></span>
+          </div>
         </div>
-        <div style="text-align: right; width: 45%;">
-          <p style="font-size: 14px; margin: 0;"><strong>TOTAL TAGIHAN:</strong></p>
-          <h2 id="pTotal" style="color: #1f4e79; margin: 5px 0;"></h2>
+
+        <div style="text-align: right; width: 44%;">
+          <p style="font-size: 13px; margin: 0; color: #555;"><strong>TOTAL TAGIHAN:</strong></p>
+          <h2 id="pTotal" style="color: #1f4e79; margin: 5px 0; font-size: 22px;"></h2>
         </div>
       </div>
       <div style="margin-top: 40px; text-align: center; font-size: 11px; color: #777;">
@@ -710,7 +688,7 @@
       </div>
     </div>
 
-    <!-- SCRIPT IMPLEMENTASI DATABASE (INDEXEDDB) & FITUR AUTO LINK -->
+    <!-- SCRIPT APPLICATION -->
     <script>
       const DB_NAME = 'ArtDesignDB';
       const DB_VERSION = 1;
@@ -752,17 +730,19 @@
       }
 
       const hargaMaster = {
-        Brochure: 150000,
-        Poster: 220000,
-        Banner: 350000,
-        Packaging: 275000,
-        'Social Media': 180000
+        'Spanduk': 150000,
+        'Plang': 220000,
+        'Leaflet, Poster': 350000,
+        'Nota Costum': 275000,
+        'Stemple': 180000,
+        'X banner': 180000
       };
 
       document.addEventListener('DOMContentLoaded', async () => {
         await initDB();
         setupTabs();
         setupFormCalculations();
+        setupBankSync();
         setupFormSubmit();
         setupWhatsAppSender();
         setupPrintInvoice();
@@ -799,6 +779,21 @@
         jumlahOrderInput.addEventListener('input', updateLiveCalculator);
       }
 
+      function setupBankSync() {
+        const bankSelect = document.getElementById('namaBankSelect');
+        const bankDetails = {
+          'BCA': 'BCA: 1234567890 (a.n Haikal Art Design)',
+          'Mandiri': 'Mandiri: 137000123456 (a.n Haikal Art Design)',
+          'BNI': 'BNI: 0987654321 (a.n Haikal Art Design)',
+          'BRI': 'BRI: 602101001234567 (a.n Haikal Art Design)'
+        };
+        bankSelect.addEventListener('change', (e) => {
+          if (bankDetails[e.target.value]) {
+            document.getElementById('bankInfo').value = bankDetails[e.target.value];
+          }
+        });
+      }
+
       function updateLiveCalculator() {
         const hargaDasar = parseFloat(document.getElementById('hargaDasar').value) || 0;
         const jumlah = parseInt(document.getElementById('jumlahOrder').value) || 1;
@@ -820,11 +815,11 @@
           invoiceNo: document.getElementById('invoiceNo').value.trim() || 'INV-001',
           customerId: document.getElementById('customerId').value.trim() || 'CUST-001',
           hariPemesanan: document.getElementById('hariPemesanan').value || 'Senin',
-          tanggalPemesanan: document.getElementById('tanggalPemesanan').value || '01/01/2026',
+          tanggalPemesanan: document.getElementById('tanggalPemesanan').value.trim() || '11/11/2026',
           namaCustomer: document.getElementById('namaCustomer').value.trim() || 'Pelanggan',
           waCustomer: document.getElementById('waCustomer').value.trim() || '08123456789',
           emailCustomer: document.getElementById('emailCustomer').value.trim() || '-',
-          kategoriProduk: document.getElementById('kategoriProduk').value || 'Brochure',
+          kategoriProduk: document.getElementById('kategoriProduk').value || 'Spanduk',
           orientasi: document.getElementById('orientasi').value || 'Portrait',
           dimensi: document.getElementById('dimensi').value.trim() || 'A4',
           jumlahOrder: jumlahOrder,
@@ -860,7 +855,6 @@
         });
       }
 
-      // Auto Send WhatsApp
       function setupWhatsAppSender() {
         document.getElementById('btnSendWa').addEventListener('click', () => {
           const o = getFormData();
@@ -871,6 +865,7 @@ Halo *${o.namaCustomer}*,
 Terima kasih telah memesan di Art Design. Berikut rincian tagihan Anda:
 
 🧾 *No. Invoice:* ${o.invoiceNo}
+📅 *Tanggal Order:* ${o.hariPemesanan}, ${o.tanggalPemesanan}
 📦 *Kategori:* ${o.kategoriProduk} (${o.orientasi} - ${o.dimensi})
 🔢 *Jumlah:* ${o.jumlahOrder} Pcs
 💰 *Total Tagihan:* *${formatRupiah(o.totalInvoice)}*
@@ -887,7 +882,6 @@ Silakan lakukan pembayaran dan konfirmasi melalui chat ini. Terima kasih! 🙏`;
         });
       }
 
-      // Print Invoice Function
       function setupPrintInvoice() {
         document.getElementById('btnPrintInvoice').addEventListener('click', () => {
           const o = getFormData();
@@ -962,7 +956,6 @@ Silakan lakukan pembayaran dan konfirmasi melalui chat ini. Terima kasih! 🙏`;
         const topPayment = Object.keys(payCount).reduce((a, b) => (payCount[a] > payCount[b] ? a : b), 'QRIS');
         document.getElementById('auditPaymentMethod').innerText = totalOrders > 0 ? topPayment : '-';
 
-        // Hari Trend
         const dayTrendList = document.getElementById('dayTrendList');
         dayTrendList.innerHTML = '';
         ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'].forEach((day) => {
@@ -972,7 +965,6 @@ Silakan lakukan pembayaran dan konfirmasi melalui chat ini. Terima kasih! 🙏`;
           dayTrendList.appendChild(li);
         });
 
-        // Payment Breakdown
         const paymentBreakdownList = document.getElementById('paymentBreakdownList');
         paymentBreakdownList.innerHTML = '';
         Object.keys(payCount).forEach((method) => {
@@ -981,7 +973,6 @@ Silakan lakukan pembayaran dan konfirmasi melalui chat ini. Terima kasih! 🙏`;
           paymentBreakdownList.appendChild(li);
         });
 
-        // Category Breakdown
         const categoryBreakdownList = document.getElementById('categoryBreakdownList');
         categoryBreakdownList.innerHTML = '';
         const catOmset = {};
