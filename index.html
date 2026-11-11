@@ -3,264 +3,322 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Art Design</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>Art Design - Sistem Manajemen Order</title>
     <style>
       :root {
-  --bg-color: #f4f7fa;
-  --panel-bg: #ffffff;
-  --primary: #1f4e79;
-  --primary-light: #2f5597;
-  --text-color: #333333;
-  --border-color: #e2e8f0;
-  --accent-yellow: #fff2cc;
-  --accent-green: #e2efda;
-}
+        --bg-color: #f4f7fa;
+        --panel-bg: #ffffff;
+        --primary: #1f4e79;
+        --primary-light: #2f5597;
+        --text-color: #333333;
+        --border-color: #e2e8f0;
+        --accent-yellow: #fff2cc;
+        --accent-green: #e2efda;
+      }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
 
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  padding: 20px;
-}
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        padding: 20px;
+      }
 
-.app-shell {
-  max-width: 1200px;
-  margin: 0 auto;
-  background: var(--panel-bg);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-}
+      .app-shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: var(--panel-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
 
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  background: var(--primary);
-  color: white;
-}
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px;
+        background: var(--primary);
+        color: white;
+      }
 
-.topbar .eyebrow {
-  font-size: 12px;
-  text-transform: uppercase;
-  opacity: 0.8;
-}
-.topbar h1 {
-  font-size: 20px;
-}
-.topbar-badge {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-}
+      .topbar .eyebrow {
+        font-size: 12px;
+        text-transform: uppercase;
+        opacity: 0.8;
+      }
+      .topbar h1 {
+        font-size: 20px;
+      }
+      .topbar-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+      }
 
-.sheet-tabs {
-  display: flex;
-  background: #e9ecef;
-  border-bottom: 2px solid var(--border-color);
-}
+      .sheet-tabs {
+        display: flex;
+        background: #e9ecef;
+        border-bottom: 2px solid var(--border-color);
+        overflow-x: auto;
+      }
 
-.tab {
-  flex: 1;
-  padding: 14px;
-  border: none;
-  background: transparent;
-  font-weight: bold;
-  color: #555;
-  cursor: pointer;
-  transition: all 0.2s;
-}
+      .tab {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        background: transparent;
+        font-weight: bold;
+        color: #555;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s;
+      }
 
-.tab.active {
-  background: var(--panel-bg);
-  color: var(--primary);
-  border-bottom: 3px solid var(--primary);
-}
+      .tab.active {
+        background: var(--panel-bg);
+        color: var(--primary);
+        border-bottom: 3px solid var(--primary);
+      }
 
-.sheet-panel {
-  display: none;
-  padding: 24px;
-}
-.sheet-panel.active {
-  display: block;
-}
+      .sheet-panel {
+        display: none;
+        padding: 24px;
+      }
+      .sheet-panel.active {
+        display: block;
+      }
 
-.panel-header {
-  margin-bottom: 20px;
-}
-.section-kicker {
-  font-size: 12px;
-  color: #888;
-  text-transform: uppercase;
-}
+      .panel-header {
+        margin-bottom: 20px;
+      }
+      .section-kicker {
+        font-size: 12px;
+        color: #888;
+        text-transform: uppercase;
+      }
 
-.grid-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-}
+      .grid-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+      }
 
-.field {
-  display: flex;
-  flex-direction: column;
-}
-.field-wide {
-  grid-column: span 2;
-}
+      .field {
+        display: flex;
+        flex-direction: column;
+      }
+      .field-wide {
+        grid-column: span 2;
+      }
 
-label {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
+      label {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
 
-input,
-select {
-  padding: 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background-color: var(--accent-yellow);
-  font-size: 14px;
-}
+      input,
+      select {
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background-color: var(--accent-yellow);
+        font-size: 14px;
+      }
 
-.calculator-box {
-  background: var(--accent-green);
-  border: 1px solid #c3e6cb;
-  border-radius: 8px;
-  padding: 16px;
-}
+      .calculator-box {
+        background: var(--accent-green);
+        border: 1px solid #c3e6cb;
+        border-radius: 8px;
+        padding: 16px;
+      }
 
-.calc-head {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.calc-head #liveTotal {
-  font-size: 20px;
-  font-weight: bold;
-  color: #276749;
-}
+      .calc-head {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .calc-head #liveTotal {
+        font-size: 20px;
+        font-weight: bold;
+        color: #276749;
+      }
 
-.calc-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-}
-.calc-grid div {
-  display: flex;
-  flex-direction: column;
-  font-size: 12px;
-}
+      .calc-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .calc-grid div {
+        display: flex;
+        flex-direction: column;
+        font-size: 12px;
+      }
 
-.primary-btn {
-  background: var(--primary);
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-}
+      .primary-btn {
+        background: var(--primary);
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .primary-btn:hover { background: var(--primary-light); }
 
-.table-wrap {
-  overflow-x: auto;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th,
-td {
-  padding: 12px 14px;
-  border: 1px solid var(--border-color);
-  text-align: left;
-  font-size: 13px;
-}
-th {
-  background: var(--primary);
-  color: white;
-}
+      .secondary-btn {
+        background: #25D366;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
 
-.badge {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: bold;
-}
-.status-paid {
-  background: #d1fae5;
-  color: #065f46;
-}
-.status-unpaid {
-  background: #fee2e2;
-  color: #991b1b;
-}
-.status-dp {
-  background: #fef3c7;
-  color: #92400e;
-}
+      .print-btn {
+        background: #4A5568;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+      }
 
-.audit-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.metric-card {
-  background: var(--bg-color);
-  padding: 16px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-}
-.metric-card strong {
-  font-size: 22px;
-  margin-top: 6px;
-}
+      .actions-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
 
-.audit-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-.mini-panel {
-  background: #f8fafc;
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-}
-.full-span {
-  grid-column: span 2;
-}
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 12px 14px;
+        border: 1px solid var(--border-color);
+        text-align: left;
+        font-size: 13px;
+      }
+      th {
+        background: var(--primary);
+        color: white;
+      }
 
-.trend-list,
-.master-list {
-  list-style: none;
-  margin-top: 10px;
-}
-.trend-list li,
-.master-list li {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px dashed var(--border-color);
-  font-size: 13px;
-}
-.master-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
+      .badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: bold;
+      }
+      .status-paid, .status-lunas {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .status-unpaid, .status-belumbayar {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .status-dp {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .audit-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .metric-card {
+        background: var(--bg-color);
+        padding: 16px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+      }
+      .metric-card strong {
+        font-size: 22px;
+        margin-top: 6px;
+      }
+
+      .audit-layout {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+      .mini-panel {
+        background: #f8fafc;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+      }
+      .full-span {
+        grid-column: 1 / -1;
+      }
+
+      .trend-list,
+      .master-list {
+        list-style: none;
+        margin-top: 10px;
+      }
+      .trend-list li,
+      .master-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dashed var(--border-color);
+        font-size: 13px;
+      }
+      .master-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+      }
+
+      /* PRINT INVOICE MODAL / STYLING */
+      #printArea {
+        display: none;
+      }
+
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #printArea, #printArea * {
+          visibility: visible;
+        }
+        #printArea {
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          padding: 20px;
+          background: white;
+          color: black;
+          font-size: 14px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -280,11 +338,12 @@ th {
         <button class="tab" data-sheet="sheet4">Data & Harga</button>
       </nav>
 
+      <!-- SHEET 1: FORM INPUT -->
       <main class="sheet-panel active" id="sheet1">
         <section class="panel-header">
           <div>
             <p class="section-kicker">Form Input</p>
-            <h2>Order Input</h2>
+            <h2>Order Input & Pembayaran</h2>
           </div>
         </section>
 
@@ -315,7 +374,7 @@ th {
 
           <div class="field">
             <label for="tanggalPemesanan">Tanggal Pemesanan</label>
-            <input id="tanggalPemesanan" name="tanggalPemesanan" type="text" placeholder="dd/mm/yyyy" pattern="\\d{2}/\\d{2}/\\d{4}" required />
+            <input id="tanggalPemesanan" name="tanggalPemesanan" type="text" placeholder="dd/mm/yyyy" required />
           </div>
 
           <div class="field field-wide">
@@ -366,8 +425,19 @@ th {
           </div>
 
           <div class="field">
-            <label for="hargaDasar">Harga Dasar</label>
+            <label for="hargaDasar">Harga Dasar (IDR)</label>
             <input id="hargaDasar" name="hargaDasar" type="number" min="0" value="150000" required />
+          </div>
+
+          <!-- REKENING BANK & QRIS PLACEHOLDER -->
+          <div class="field">
+            <label for="bankInfo">Rekening BANK (Transfer)</label>
+            <input id="bankInfo" name="bankInfo" type="text" placeholder="BCA 1234567890 a.n Haikal" value="BCA: 1234567890 (a.n Haikal Art Design)" required />
+          </div>
+
+          <div class="field">
+            <label for="qrisInfo">QRIS Payment</label>
+            <input id="qrisInfo" name="qrisInfo" type="text" placeholder="Link / ID Merchant QRIS" value="QRIS-ARTDESIGN-098" required />
           </div>
 
           <div class="field">
@@ -389,6 +459,7 @@ th {
               <option>DP</option>
             </select>
           </div>
+
           <div class="field field-wide calculator-box">
             <div class="calc-head">
               <h3>Kalkulator Estimasi Harga</h3>
@@ -416,16 +487,18 @@ th {
 
           <div class="field field-wide actions-row">
             <button type="submit" class="primary-btn">Simpan & Auto Link Transaksi</button>
+            <button type="button" id="btnSendWa" class="secondary-btn">
+              📱 Kirim Invoice ke WhatsApp
+            </button>
+            <button type="button" id="btnPrintInvoice" class="print-btn">
+              🖨️ Cetak Invoice
+            </button>
             <div class="status-note" id="formStatus">Siap menyimpan data baru</div>
           </div>
-           <div class="field field-wide actions-row" style="display: flex; gap: 10px; align-items: center;">
-  <button type="submit" class="primary-btn">Simpan & Auto Link Transaksi</button>
-  <button type="button" id="btnSendWa" class="secondary-btn" style="background: #25D366; color: white; padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-    📱 Kirim Invoice ke WhatsApp
-  </button>
         </form>
       </main>
 
+      <!-- SHEET 2: PEMESANAN (REGISTER) -->
       <main class="sheet-panel" id="sheet2">
         <section class="panel-header">
           <div>
@@ -457,6 +530,7 @@ th {
         </div>
       </main>
 
+      <!-- SHEET 3: AUDIT -->
       <main class="sheet-panel" id="sheet3">
         <section class="panel-header">
           <div>
@@ -502,6 +576,7 @@ th {
         </div>
       </main>
 
+      <!-- SHEET 4: DATA & HARGA -->
       <main class="sheet-panel" id="sheet4">
         <section class="panel-header">
           <div>
@@ -514,13 +589,7 @@ th {
           <div class="mini-panel">
             <h3>Master Opsi Hari</h3>
             <ul class="master-list">
-              <li>Senin</li>
-              <li>Selasa</li>
-              <li>Rabu</li>
-              <li>Kamis</li>
-              <li>Jumat</li>
-              <li>Sabtu</li>
-              <li>Minggu</li>
+              <li>Senin</li><li>Selasa</li><li>Rabu</li><li>Kamis</li><li>Jumat</li><li>Sabtu</li><li>Minggu</li>
             </ul>
           </div>
 
@@ -536,17 +605,353 @@ th {
           </div>
 
           <div class="mini-panel">
-            <h3>Metode Pembayaran</h3>
+            <h3>Metode & Pembayaran (BANK & QRIS)</h3>
             <ul class="master-list">
-              <li>QRIS</li>
+              <li>QRIS (Placeholder Aktif)</li>
               <li>Cash</li>
-              <li>Transfer Bank</li>
+              <li>Transfer BANK (BCA / Mandiri / BNI)</li>
             </ul>
           </div>
         </div>
       </main>
     </div>
 
-    <script src="script.js"></script>
+    <!-- PRINTABLE INVOICE TEMPLATE (HIDDEN UNTUK CETAK) -->
+    <div id="printArea">
+      <div style="text-align: center; border-bottom: 2px solid #1f4e79; padding-bottom: 10px; margin-bottom: 15px;">
+        <h2 style="color: #1f4e79; margin: 0;">HAIKAL | ART DESIGN</h2>
+        <p style="font-size: 12px; color: #555;">Jasa Desain Grafis & Percetakan Profesional</p>
+      </div>
+      <h3>INVOICE PEMESANAN</h3>
+      <table style="width: 100%; margin-top: 10px; font-size: 13px; border-collapse: collapse;">
+        <tr><td><strong>No. Invoice:</strong> <span id="pInvoice"></span></td><td><strong>Tanggal:</strong> <span id="pTanggal"></span></td></tr>
+        <tr><td><strong>ID Customer:</strong> <span id="pCustId"></span></td><td><strong>Hari:</strong> <span id="pHari"></span></td></tr>
+        <tr><td><strong>Nama Customer:</strong> <span id="pNama"></span></td><td><strong>No. WA:</strong> <span id="pWa"></span></td></tr>
+        <tr><td colspan="2"><strong>Alamat / Email:</strong> <span id="pEmail"></span></td></tr>
+      </table>
+
+      <table style="width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 13px;" border="1">
+        <tr style="background: #1f4e79; color: white;">
+          <th style="padding: 6px;">Kategori Produk</th>
+          <th style="padding: 6px;">Orientasi & Dimensi</th>
+          <th style="padding: 6px;">Jumlah</th>
+          <th style="padding: 6px;">Harga Dasar</th>
+          <th style="padding: 6px;">Subtotal</th>
+        </tr>
+        <tr>
+          <td id="pKategori" style="padding: 6px;"></td>
+          <td id="pDimensi" style="padding: 6px;"></td>
+          <td id="pJumlah" style="padding: 6px; text-align: center;"></td>
+          <td id="pHarga" style="padding: 6px; text-align: right;"></td>
+          <td id="pSubtotal" style="padding: 6px; text-align: right;"></td>
+        </tr>
+      </table>
+
+      <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-start;">
+        <div style="font-size: 12px; border: 1px solid #ccc; padding: 10px; width: 50%;">
+          <strong>INFORMASI PEMBAYARAN:</strong><br>
+          • Metode: <span id="pMetode"></span><br>
+          • Status: <span id="pStatus" style="font-weight: bold;"></span><br>
+          • Rekening BANK: <span id="pBank"></span><br>
+          • QRIS Code: <span id="pQris"></span>
+        </div>
+        <div style="text-align: right; width: 45%;">
+          <p style="font-size: 14px; margin: 0;"><strong>TOTAL TAGIHAN:</strong></p>
+          <h2 id="pTotal" style="color: #1f4e79; margin: 5px 0;"></h2>
+        </div>
+      </div>
+      <div style="margin-top: 40px; text-align: center; font-size: 11px; color: #777;">
+        Terima kasih atas kepercayaan Anda kepada Haikal | Art Design!<br>Simpan invoice ini sebagai bukti pemesanan yang sah.
+      </div>
+    </div>
+
+    <!-- SCRIPT IMPLEMENTASI DATABASE (INDEXEDDB) & FITUR AUTO LINK -->
+    <script>
+      const DB_NAME = 'ArtDesignDB';
+      const DB_VERSION = 1;
+      const STORE_NAME = 'orders';
+      let db = null;
+
+      function initDB() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onupgradeneeded = (event) => {
+            const dbInstance = event.target.result;
+            if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
+              dbInstance.createObjectStore(STORE_NAME, { keyPath: 'invoiceNo' });
+            }
+          };
+          request.onsuccess = (event) => { db = event.target.result; resolve(db); };
+          request.onerror = (event) => reject(event.target.error);
+        });
+      }
+
+      function saveOrderToDB(orderData) {
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readwrite');
+          const store = transaction.objectStore(STORE_NAME);
+          const request = store.put(orderData);
+          request.onsuccess = () => resolve(true);
+          request.onerror = (e) => reject(e.target.error);
+        });
+      }
+
+      function getAllOrdersFromDB() {
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readonly');
+          const store = transaction.objectStore(STORE_NAME);
+          const request = store.getAll();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = (e) => reject(e.target.error);
+        });
+      }
+
+      const hargaMaster = {
+        Brochure: 150000,
+        Poster: 220000,
+        Banner: 350000,
+        Packaging: 275000,
+        'Social Media': 180000
+      };
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        await initDB();
+        setupTabs();
+        setupFormCalculations();
+        setupFormSubmit();
+        setupWhatsAppSender();
+        setupPrintInvoice();
+        await refreshUI();
+      });
+
+      function setupTabs() {
+        const tabs = document.querySelectorAll('.sheet-tabs .tab');
+        const panels = document.querySelectorAll('.sheet-panel');
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            tabs.forEach((t) => t.classList.remove('active'));
+            panels.forEach((p) => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.getAttribute('data-sheet')).classList.add('active');
+          });
+        });
+      }
+
+      function setupFormCalculations() {
+        const kategoriSelect = document.getElementById('kategoriProduk');
+        const hargaDasarInput = document.getElementById('hargaDasar');
+        const jumlahOrderInput = document.getElementById('jumlahOrder');
+
+        kategoriSelect.addEventListener('change', (e) => {
+          const selected = e.target.value;
+          if (hargaMaster[selected]) {
+            hargaDasarInput.value = hargaMaster[selected];
+          }
+          updateLiveCalculator();
+        });
+
+        hargaDasarInput.addEventListener('input', updateLiveCalculator);
+        jumlahOrderInput.addEventListener('input', updateLiveCalculator);
+      }
+
+      function updateLiveCalculator() {
+        const hargaDasar = parseFloat(document.getElementById('hargaDasar').value) || 0;
+        const jumlah = parseInt(document.getElementById('jumlahOrder').value) || 1;
+        const subtotal = hargaDasar * jumlah;
+        document.getElementById('displayHargaDasar').innerText = formatRupiah(hargaDasar);
+        document.getElementById('displayJumlah').innerText = jumlah;
+        document.getElementById('displaySubtotal').innerText = formatRupiah(subtotal);
+        document.getElementById('liveTotal').innerText = formatRupiah(subtotal);
+      }
+
+      function formatRupiah(angka) {
+        return 'Rp ' + new Intl.NumberFormat('id-ID').format(angka);
+      }
+
+      function getFormData() {
+        const hargaDasar = parseFloat(document.getElementById('hargaDasar').value) || 0;
+        const jumlahOrder = parseInt(document.getElementById('jumlahOrder').value) || 1;
+        return {
+          invoiceNo: document.getElementById('invoiceNo').value.trim() || 'INV-001',
+          customerId: document.getElementById('customerId').value.trim() || 'CUST-001',
+          hariPemesanan: document.getElementById('hariPemesanan').value || 'Senin',
+          tanggalPemesanan: document.getElementById('tanggalPemesanan').value || '01/01/2026',
+          namaCustomer: document.getElementById('namaCustomer').value.trim() || 'Pelanggan',
+          waCustomer: document.getElementById('waCustomer').value.trim() || '08123456789',
+          emailCustomer: document.getElementById('emailCustomer').value.trim() || '-',
+          kategoriProduk: document.getElementById('kategoriProduk').value || 'Brochure',
+          orientasi: document.getElementById('orientasi').value || 'Portrait',
+          dimensi: document.getElementById('dimensi').value.trim() || 'A4',
+          jumlahOrder: jumlahOrder,
+          hargaDasar: hargaDasar,
+          totalInvoice: hargaDasar * jumlahOrder,
+          bankInfo: document.getElementById('bankInfo').value.trim(),
+          qrisInfo: document.getElementById('qrisInfo').value.trim(),
+          metodeBayar: document.getElementById('metodeBayar').value || 'QRIS',
+          statusBayar: document.getElementById('statusBayar').value || 'Paid',
+          createdAt: new Date().toISOString()
+        };
+      }
+
+      function setupFormSubmit() {
+        const form = document.getElementById('orderForm');
+        const statusNote = document.getElementById('formStatus');
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const order = getFormData();
+          try {
+            await saveOrderToDB(order);
+            statusNote.innerText = '✅ Order ' + order.invoiceNo + ' berhasil disimpan & ter-link!';
+            statusNote.style.color = '#10B981';
+            form.reset();
+            updateLiveCalculator();
+            await refreshUI();
+            setTimeout(() => { statusNote.innerText = 'Siap menyimpan data baru'; statusNote.style.color = ''; }, 4000);
+          } catch (err) {
+            statusNote.innerText = '❌ Gagal menyimpan (Invoice sudah ada / Error)';
+            statusNote.style.color = '#EF4444';
+          }
+        });
+      }
+
+      // Auto Send WhatsApp
+      function setupWhatsAppSender() {
+        document.getElementById('btnSendWa').addEventListener('click', () => {
+          const o = getFormData();
+          const message = 
+`*INVOICE PEMESANAN - HAIKAL ART DESIGN*
+-----------------------------------
+Halo *${o.namaCustomer}*, 
+Terima kasih telah memesan di Art Design. Berikut rincian tagihan Anda:
+
+🧾 *No. Invoice:* ${o.invoiceNo}
+📦 *Kategori:* ${o.kategoriProduk} (${o.orientasi} - ${o.dimensi})
+🔢 *Jumlah:* ${o.jumlahOrder} Pcs
+💰 *Total Tagihan:* *${formatRupiah(o.totalInvoice)}*
+
+💳 *Metode:* ${o.metodeBayar}
+🏦 *Transfer Bank:* ${o.bankInfo}
+📌 *Status:* *${o.statusBayar}*
+
+Silakan lakukan pembayaran dan konfirmasi melalui chat ini. Terima kasih! 🙏`;
+
+          let cleanPhone = o.waCustomer.replace(/\D/g, '');
+          if (cleanPhone.startsWith('0')) cleanPhone = '62' + cleanPhone.slice(1);
+          window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
+        });
+      }
+
+      // Print Invoice Function
+      function setupPrintInvoice() {
+        document.getElementById('btnPrintInvoice').addEventListener('click', () => {
+          const o = getFormData();
+          document.getElementById('pInvoice').innerText = o.invoiceNo;
+          document.getElementById('pTanggal').innerText = o.tanggalPemesanan;
+          document.getElementById('pCustId').innerText = o.customerId;
+          document.getElementById('pHari').innerText = o.hariPemesanan;
+          document.getElementById('pNama').innerText = o.namaCustomer;
+          document.getElementById('pWa').innerText = o.waCustomer;
+          document.getElementById('pEmail').innerText = o.emailCustomer;
+          document.getElementById('pKategori').innerText = o.kategoriProduk;
+          document.getElementById('pDimensi').innerText = `${o.orientasi} (${o.dimensi})`;
+          document.getElementById('pJumlah').innerText = o.jumlahOrder;
+          document.getElementById('pHarga').innerText = formatRupiah(o.hargaDasar);
+          document.getElementById('pSubtotal').innerText = formatRupiah(o.totalInvoice);
+          document.getElementById('pMetode').innerText = o.metodeBayar;
+          document.getElementById('pStatus').innerText = o.statusBayar;
+          document.getElementById('pBank').innerText = o.bankInfo;
+          document.getElementById('pQris').innerText = o.qrisInfo;
+          document.getElementById('pTotal').innerText = formatRupiah(o.totalInvoice);
+
+          window.print();
+        });
+      }
+
+      async function refreshUI() {
+        const orders = await getAllOrdersFromDB();
+        renderTable(orders);
+        renderAuditDashboard(orders);
+      }
+
+      function renderTable(orders) {
+        const tbody = document.getElementById('transactionTableBody');
+        tbody.innerHTML = '';
+        if (orders.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; padding: 20px; color: #888;">Belum ada data transaksi tersimpan.</td></tr>`;
+          return;
+        }
+        orders.forEach((order, index) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td><strong>${order.invoiceNo}</strong></td>
+            <td>${order.customerId}</td>
+            <td>${order.namaCustomer}</td>
+            <td>${order.hariPemesanan}</td>
+            <td>${order.tanggalPemesanan}</td>
+            <td><span class="badge badge-kat">${order.kategoriProduk}</span></td>
+            <td>${order.orientasi}</td>
+            <td>${order.dimensi}</td>
+            <td><strong>${formatRupiah(order.totalInvoice)}</strong></td>
+            <td>${order.metodeBayar}</td>
+            <td><span class="badge status-${order.statusBayar.toLowerCase()}">${order.statusBayar}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderAuditDashboard(orders) {
+        const totalOrders = orders.length;
+        const unpaidCount = orders.filter((o) => o.statusBayar.toLowerCase() === 'unpaid').length;
+        const totalRevenue = orders.reduce((sum, o) => sum + (o.totalInvoice || 0), 0);
+
+        document.getElementById('auditTotalOrders').innerText = totalOrders;
+        document.getElementById('auditUnpaid').innerText = unpaidCount;
+        document.getElementById('auditRevenue').innerText = formatRupiah(totalRevenue);
+
+        const payCount = { QRIS: 0, Cash: 0, 'Transfer Bank': 0 };
+        orders.forEach((o) => {
+          if (payCount[o.metodeBayar] !== undefined) payCount[o.metodeBayar]++;
+        });
+        const topPayment = Object.keys(payCount).reduce((a, b) => (payCount[a] > payCount[b] ? a : b), 'QRIS');
+        document.getElementById('auditPaymentMethod').innerText = totalOrders > 0 ? topPayment : '-';
+
+        // Hari Trend
+        const dayTrendList = document.getElementById('dayTrendList');
+        dayTrendList.innerHTML = '';
+        ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'].forEach((day) => {
+          const count = orders.filter((o) => o.hariPemesanan === day).length;
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${day}</span> <strong>${count} Order</strong>`;
+          dayTrendList.appendChild(li);
+        });
+
+        // Payment Breakdown
+        const paymentBreakdownList = document.getElementById('paymentBreakdownList');
+        paymentBreakdownList.innerHTML = '';
+        Object.keys(payCount).forEach((method) => {
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${method}</span> <strong>${payCount[method]} Transaksi</strong>`;
+          paymentBreakdownList.appendChild(li);
+        });
+
+        // Category Breakdown
+        const categoryBreakdownList = document.getElementById('categoryBreakdownList');
+        categoryBreakdownList.innerHTML = '';
+        const catOmset = {};
+        orders.forEach((o) => {
+          catOmset[o.kategoriProduk] = (catOmset[o.kategoriProduk] || 0) + o.totalInvoice;
+        });
+
+        Object.keys(hargaMaster).forEach((cat) => {
+          const omset = catOmset[cat] || 0;
+          const pct = totalRevenue > 0 ? ((omset / totalRevenue) * 100).toFixed(1) : 0;
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${cat}</span> <strong>${formatRupiah(omset)} (${pct}%)</strong>`;
+          categoryBreakdownList.appendChild(li);
+        });
+      }
+    </script>
   </body>
 </html>
